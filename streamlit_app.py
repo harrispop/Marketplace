@@ -1,68 +1,115 @@
 import streamlit as st
-import folium
-from streamlit_folium import st_folium
+import streamlit.components.v1 as components
 
-# Define the app's navigation
-st.sidebar.title("Marketplace App")
-page = st.sidebar.selectbox("Navigate", ["Profile Page", "Swipe Items", "Map View"])
-
-# Sample data with placeholder images
-sample_items = [
-    {"name": "Bike", "price": "$200", "image_url": "https://picsum.photos/400/300?random=1", "location": [37.7749, -122.4194]},
-    {"name": "Laptop", "price": "$500", "image_url": "https://picsum.photos/400/300?random=2", "location": [34.0522, -118.2437]},
-    {"name": "Table", "price": "$100", "image_url": "https://picsum.photos/400/300?random=3", "location": [40.7128, -74.0060]},
+# Data for the swipe page
+items = [
+    {"name": "Bike", "price": "$200", "description": "A mountain bike perfect for trails.", "details": "Prefers cash payment. Offers shipping. Seller: Alex, Location: NY"},
+    {"name": "Laptop", "price": "$500", "description": "A gaming laptop with RTX 3060.", "details": "Accepts PayPal. Seller: Jordan, Location: LA"},
+    {"name": "Table", "price": "$100", "description": "A solid wooden dining table.", "details": "Prefers local pickup. Seller: Chris, Location: SF"},
+    {"name": "Chair", "price": "$50", "description": "Ergonomic office chair.", "details": "Prefers cash payment. Seller: Taylor, Location: TX"},
+    {"name": "Phone", "price": "$300", "description": "iPhone 12 in great condition.", "details": "Accepts Venmo. Offers shipping. Seller: Morgan, Location: Chicago"},
+    {"name": "TV", "price": "$400", "description": "55-inch 4K Ultra HD TV.", "details": "Accepts credit cards. Seller: Casey, Location: Miami"},
+    {"name": "Watch", "price": "$150", "description": "Stylish smartwatch.", "details": "Prefers cash payment. Seller: Riley, Location: Seattle"},
+    {"name": "Camera", "price": "$250", "description": "DSLR camera with lens kit.", "details": "Offers shipping. Seller: Jamie, Location: Denver"},
+    {"name": "Sofa", "price": "$350", "description": "Comfortable 3-seater sofa.", "details": "Local pickup only. Seller: Dana, Location: Portland"},
+    {"name": "Headphones", "price": "$75", "description": "Noise-canceling headphones.", "details": "Prefers cash payment. Seller: Taylor, Location: Boston"},
 ]
 
-# Page 1: Profile Page
-if page == "Profile Page":
-    st.title("Upload Your Item")
-
-    # Form for item details
-    with st.form("item_form"):
-        item_name = st.text_input("Item Name")
-        item_price = st.text_input("Price")
-        item_image = st.file_uploader("Upload Item Image (optional)", type=["jpg", "png", "jpeg"])
-        submit_button = st.form_submit_button("Add Item")
-
-        if submit_button:
-            if item_name and item_price:
-                st.success(f"{item_name} has been added!")
-            else:
-                st.error("Please fill in all required fields!")
-
-# Page 2: Swipe Items
-elif page == "Swipe Items":
+# Swipe Page with Custom HTML and JavaScript
+def swipe_page():
     st.title("Swipe Items")
-    st.write("Swipe Right for items you like or Left to skip.")
+    st.write("Swipe right (green) if you like the item or left (red) to skip. Click on an item to see more details.")
 
-    # Show items in swipeable format
-    for item in sample_items:
-        st.image(item["image_url"], caption=item["name"], use_column_width=True)
-        st.write(f"Price: {item['price']}")
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button(f"Skip {item['name']}"):
-                st.write(f"Skipped {item['name']}")
-        with col2:
-            if st.button(f"Like {item['name']}"):
-                st.success(f"You liked {item['name']}")
+    # Custom HTML/JS for Swiping
+    html_code = """
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/9.0.1/swiper-bundle.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/9.0.1/swiper-bundle.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .swiper-container {
+            width: 100%;
+            height: 500px;
+            overflow: hidden;
+        }
+        .swiper-slide {
+            position: relative;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .swiper-slide img {
+            max-width: 100%;
+            max-height: 60%;
+            border-radius: 10px;
+        }
+        .details-btn {
+            position: absolute;
+            bottom: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .details-btn:hover {
+            background-color: #0056b3;
+        }
+        .overlay-right {
+            background: rgba(0, 255, 0, 0.2);
+            z-index: 1000;
+        }
+        .overlay-left {
+            background: rgba(255, 0, 0, 0.2);
+            z-index: 1000;
+        }
+    </style>
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+    """
 
-# Page 3: Map View
-elif page == "Map View":
-    st.title("Map View of Listings")
-    st.write("View items available in your area.")
+    for item in items:
+        html_code += f"""
+        <div class="swiper-slide">
+            <img src="https://picsum.photos/300/200?random={items.index(item)}" alt="{item['name']}">
+            <h3>{item['name']}</h3>
+            <p>{item['description']}</p>
+            <p><b>{item['price']}</b></p>
+            <button class="details-btn" onclick="alert('{item['details']}')">View Details</button>
+        </div>
+        """
 
-    # Create a map
-    map_center = [37.7749, -122.4194]
-    folium_map = folium.Map(location=map_center, zoom_start=5)
+    html_code += """
+        </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+    <script>
+        const swiper = new Swiper('.swiper-container', {
+            loop: true,
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            on: {
+                slideChangeTransitionStart: function () {
+                    document.querySelector('.swiper-slide-active').classList.add('overlay-right');
+                },
+                slideChangeTransitionEnd: function () {
+                    document.querySelector('.swiper-slide-active').classList.remove('overlay-right', 'overlay-left');
+                }
+            }
+        });
+    </script>
+    """
 
-    # Add markers for items
-    for item in sample_items:
-        folium.Marker(
-            location=item["location"],
-            popup=f"{item['name']} - {item['price']}",
-            tooltip=item["name"],
-        ).add_to(folium_map)
+    # Render the HTML in Streamlit
+    components.html(html_code, height=600)
 
-    # Display the map in the app
-    st_folium(folium_map, width=700, height=500)
+# Run the Swipe Page
+swipe_page()
