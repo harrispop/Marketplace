@@ -1,45 +1,7 @@
 import streamlit as st
 import random
 import time
-
-# HTML and CSS for the swiper page
-st.markdown("""
-    <style>
-        .swiper-container {
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .swiper-slide {
-            width: 80%;
-            height: 80%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 20px;
-            overflow: hidden;
-        }
-        .swiper-slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .swiper-button-next, .swiper-button-prev {
-            color: white;
-        }
-        .swiper-button-next:hover, .swiper-button-prev:hover {
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-        .swiper-button-next {
-            right: 20px;
-        }
-        .swiper-button-prev {
-            left: 20px;
-        }
-    </style>
-""", unsafe_allow_html=True)
+import streamlit.components.v1 as components
 
 # Create a list of items with names, descriptions, and images
 items = [
@@ -58,7 +20,7 @@ items = [
 # Shuffle items to randomize the order
 random.shuffle(items)
 
-# Create the swiper section using the Swiper.js framework
+# Create the swiper section using HTML/JS code
 swiper_html = """
     <div class="swiper-container">
         <div class="swiper-wrapper">
@@ -113,6 +75,8 @@ swiper_js = """
     </script>
 """
 
-# Display the HTML in Streamlit
-st.markdown(swiper_html, unsafe_allow_html=True)
-st.markdown(swiper_js, unsafe_allow_html=True)
+# Display the HTML in Streamlit using components.html
+components.html(f"""
+    {swiper_html}
+    {swiper_js}
+""", height=600)
