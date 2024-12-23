@@ -1,115 +1,118 @@
 import streamlit as st
-import streamlit.components.v1 as components
+import random
+import time
 
-# Data for the swipe page
-items = [
-    {"name": "Bike", "price": "$200", "description": "A mountain bike perfect for trails.", "details": "Prefers cash payment. Offers shipping. Seller: Alex, Location: NY"},
-    {"name": "Laptop", "price": "$500", "description": "A gaming laptop with RTX 3060.", "details": "Accepts PayPal. Seller: Jordan, Location: LA"},
-    {"name": "Table", "price": "$100", "description": "A solid wooden dining table.", "details": "Prefers local pickup. Seller: Chris, Location: SF"},
-    {"name": "Chair", "price": "$50", "description": "Ergonomic office chair.", "details": "Prefers cash payment. Seller: Taylor, Location: TX"},
-    {"name": "Phone", "price": "$300", "description": "iPhone 12 in great condition.", "details": "Accepts Venmo. Offers shipping. Seller: Morgan, Location: Chicago"},
-    {"name": "TV", "price": "$400", "description": "55-inch 4K Ultra HD TV.", "details": "Accepts credit cards. Seller: Casey, Location: Miami"},
-    {"name": "Watch", "price": "$150", "description": "Stylish smartwatch.", "details": "Prefers cash payment. Seller: Riley, Location: Seattle"},
-    {"name": "Camera", "price": "$250", "description": "DSLR camera with lens kit.", "details": "Offers shipping. Seller: Jamie, Location: Denver"},
-    {"name": "Sofa", "price": "$350", "description": "Comfortable 3-seater sofa.", "details": "Local pickup only. Seller: Dana, Location: Portland"},
-    {"name": "Headphones", "price": "$75", "description": "Noise-canceling headphones.", "details": "Prefers cash payment. Seller: Taylor, Location: Boston"},
-]
-
-# Swipe Page with Custom HTML and JavaScript
-def swipe_page():
-    st.title("Swipe Items")
-    st.write("Swipe right (green) if you like the item or left (red) to skip. Click on an item to see more details.")
-
-    # Custom HTML/JS for Swiping
-    html_code = """
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/9.0.1/swiper-bundle.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/9.0.1/swiper-bundle.min.js"></script>
+# HTML and CSS for the swiper page
+st.markdown("""
     <style>
-        body { font-family: Arial, sans-serif; }
         .swiper-container {
             width: 100%;
-            height: 500px;
-            overflow: hidden;
-        }
-        .swiper-slide {
-            position: relative;
-            background-color: #f9f9f9;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            height: 100vh;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            text-align: center;
+        }
+        .swiper-slide {
+            width: 80%;
+            height: 80%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 20px;
+            overflow: hidden;
         }
         .swiper-slide img {
-            max-width: 100%;
-            max-height: 60%;
-            border-radius: 10px;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
-        .details-btn {
-            position: absolute;
-            bottom: 20px;
-            padding: 10px 20px;
-            background-color: #007bff;
+        .swiper-button-next, .swiper-button-prev {
             color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
         }
-        .details-btn:hover {
-            background-color: #0056b3;
+        .swiper-button-next:hover, .swiper-button-prev:hover {
+            background-color: rgba(0, 0, 0, 0.5);
         }
-        .overlay-right {
-            background: rgba(0, 255, 0, 0.2);
-            z-index: 1000;
+        .swiper-button-next {
+            right: 20px;
         }
-        .overlay-left {
-            background: rgba(255, 0, 0, 0.2);
-            z-index: 1000;
+        .swiper-button-prev {
+            left: 20px;
         }
     </style>
+""", unsafe_allow_html=True)
+
+# Create a list of items with names, descriptions, and images
+items = [
+    {"title": "Vintage Lamp", "price": "$15", "image": "https://via.placeholder.com/600x400?text=Vintage+Lamp", "description": "A quirky vintage lamp for your cozy home!", "seller": "John Doe", "location": "New York", "shipping": "Yes", "payment": "Cash Only"},
+    {"title": "Gaming Chair", "price": "$120", "image": "https://via.placeholder.com/600x400?text=Gaming+Chair", "description": "Comfy gaming chair, perfect for long sessions.", "seller": "Jane Smith", "location": "California", "shipping": "Yes", "payment": "Cash Only"},
+    {"title": "Smart Watch", "price": "$80", "image": "https://via.placeholder.com/600x400?text=Smart+Watch", "description": "Track your health with this sleek smartwatch.", "seller": "Mark Lee", "location": "Texas", "shipping": "No", "payment": "Cash Only"},
+    {"title": "Mountain Bike", "price": "$250", "image": "https://via.placeholder.com/600x400?text=Mountain+Bike", "description": "Ready for any terrain, take it for an adventure.", "seller": "Alice Cooper", "location": "Colorado", "shipping": "No", "payment": "Cash Only"},
+    {"title": "Bluetooth Speaker", "price": "$40", "image": "https://via.placeholder.com/600x400?text=Bluetooth+Speaker", "description": "Portable speaker with great sound.", "seller": "Eve Adams", "location": "Florida", "shipping": "Yes", "payment": "Cash Only"},
+    {"title": "Coffee Maker", "price": "$60", "image": "https://via.placeholder.com/600x400?text=Coffee+Maker", "description": "Start your morning right with this reliable coffee maker.", "seller": "George Harris", "location": "Georgia", "shipping": "Yes", "payment": "Cash Only"},
+    {"title": "Electric Guitar", "price": "$150", "image": "https://via.placeholder.com/600x400?text=Electric+Guitar", "description": "Rock on with this stylish electric guitar.", "seller": "Tom Baker", "location": "Chicago", "shipping": "Yes", "payment": "Cash Only"},
+    {"title": "Camera Lens", "price": "$300", "image": "https://via.placeholder.com/600x400?text=Camera+Lens", "description": "Capture your moments with this high-quality lens.", "seller": "Sarah Miller", "location": "New York", "shipping": "Yes", "payment": "Cash Only"},
+    {"title": "Drone", "price": "$400", "image": "https://via.placeholder.com/600x400?text=Drone", "description": "Fly high with this top-notch drone.", "seller": "David Wilson", "location": "California", "shipping": "Yes", "payment": "Cash Only"},
+    {"title": "Leather Jacket", "price": "$100", "image": "https://via.placeholder.com/600x400?text=Leather+Jacket", "description": "Stylish leather jacket for all seasons.", "seller": "Clara Scott", "location": "Texas", "shipping": "Yes", "payment": "Cash Only"},
+]
+
+# Shuffle items to randomize the order
+random.shuffle(items)
+
+# Create the swiper section using the Swiper.js framework
+swiper_html = """
     <div class="swiper-container">
         <div class="swiper-wrapper">
+"""
+
+# Add each item as a slide
+for item in items:
+    swiper_html += f"""
+        <div class="swiper-slide">
+            <div style="text-align:center; padding: 20px; background-color: white; border-radius: 20px;">
+                <img src="{item['image']}" alt="{item['title']}">
+                <h3>{item['title']}</h3>
+                <p>{item['description']}</p>
+                <p><strong>Price:</strong> {item['price']}</p>
+                <button onclick="showDetails('{item['title']}', '{item['seller']}', '{item['location']}', '{item['shipping']}', '{item['payment']}')">More Details</button>
+            </div>
+        </div>
     """
 
-    for item in items:
-        html_code += f"""
-        <div class="swiper-slide">
-            <img src="https://picsum.photos/300/200?random={items.index(item)}" alt="{item['name']}">
-            <h3>{item['name']}</h3>
-            <p>{item['description']}</p>
-            <p><b>{item['price']}</b></p>
-            <button class="details-btn" onclick="alert('{item['details']}')">View Details</button>
-        </div>
-        """
-
-    html_code += """
+swiper_html += """
         </div>
         <div class="swiper-button-next"></div>
         <div class="swiper-button-prev"></div>
     </div>
+"""
+
+# Add JavaScript for functionality
+swiper_js = """
     <script>
-        const swiper = new Swiper('.swiper-container', {
-            loop: true,
+        var swiper = new Swiper('.swiper-container', {
+            spaceBetween: 10,
             navigation: {
                 nextEl: '.swiper-button-next',
                 prevEl: '.swiper-button-prev',
             },
+            loop: true,
             on: {
-                slideChangeTransitionStart: function () {
-                    document.querySelector('.swiper-slide-active').classList.add('overlay-right');
-                },
-                slideChangeTransitionEnd: function () {
-                    document.querySelector('.swiper-slide-active').classList.remove('overlay-right', 'overlay-left');
+                slideChange: function () {
+                    if (this.activeIndex === this.slides.length - 1) {
+                        // Reset if we reached the last item
+                        setTimeout(function () {
+                            swiper.slideTo(0);
+                        }, 1000);
+                    }
                 }
             }
         });
+
+        function showDetails(title, seller, location, shipping, payment) {
+            alert(`Title: ${title}\nSeller: ${seller}\nLocation: ${location}\nShipping: ${shipping}\nPayment: ${payment}`);
+        }
     </script>
-    """
+"""
 
-    # Render the HTML in Streamlit
-    components.html(html_code, height=600)
-
-# Run the Swipe Page
-swipe_page()
+# Display the HTML in Streamlit
+st.markdown(swiper_html, unsafe_allow_html=True)
+st.markdown(swiper_js, unsafe_allow_html=True)
